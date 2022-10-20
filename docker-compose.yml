@@ -1,107 +1,107 @@
 version: '3.6'
 services:
-  valuter:
-      image: archwaynetwork/valuter:latest
-      container_name: valuter
-      build:
-        context: ./valuter
-        target: development  # development | test | production (default) # docker-compose up --build
-      ports: 
-        - 8080:8080
-        - 2346:2345
-      logging:
-        driver: "json-file"
-        options:
-          max-size: "200k"
-          max-file: "10"
-      volumes:
-        - ./valuter/conf.json:/app/conf.json
-        - ./valuter:/go/src/app
-      networks:
-        - archwaynetwork
-      environment:
-        SERVING_ADDR: ${VALUTER_SERVING_ADDR:-:8080} 
-        POSTGRES_DB: ${POSTGRES_DB:-cosmologger}
-        POSTGRES_USER: ${POSTGRES_USER:-root}
-        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
-        POSTGRES_PORT: ${POSTGRES_PORT:-5432}
-        POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
-        KYC_API_KEY: ${KYC_API_KEY:-R3EibZkLniyqAjcwbV3Kaaa5vMSbJTHQ}
-        KYC_CLIENT_ID: ${KYC_CLIENT_ID:-S978E872D1FC90DF}
-        KYC_API_PATH: ${KYC_API_PATH:-https://individual-api.synaps.io/v3}
-      healthcheck:
-        test: curl --fail http://localhost:8080/ || exit 1
-        interval: 30s
-        retries: 10 # Will try for 5 minutes      
-      restart: always
-      security_opt:
-        - "seccomp:unconfined"
+  # valuter:
+  #     image: archwaynetwork/valuter:latest
+  #     container_name: valuter
+  #     build:
+  #       context: ./valuter
+  #       target: development  # development | test | production (default) # docker-compose up --build
+  #     ports: 
+  #       - 8080:8080
+  #       - 2346:2345
+  #     logging:
+  #       driver: "json-file"
+  #       options:
+  #         max-size: "200k"
+  #         max-file: "10"
+  #     volumes:
+  #       - ./valuter/conf.json:/app/conf.json
+  #       - ./valuter:/go/src/app
+  #     networks:
+  #       - archwaynetwork
+  #     environment:
+  #       SERVING_ADDR: ${VALUTER_SERVING_ADDR:-:8080} 
+  #       POSTGRES_DB: ${POSTGRES_DB:-cosmologger}
+  #       POSTGRES_USER: ${POSTGRES_USER:-root}
+  #       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+  #       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+  #       POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+  #       KYC_API_KEY: ${KYC_API_KEY:-R3EibZkLniyqAjcwbV3Kaaa5vMSbJTHQ}
+  #       KYC_CLIENT_ID: ${KYC_CLIENT_ID:-S978E872D1FC90DF}
+  #       KYC_API_PATH: ${KYC_API_PATH:-https://individual-api.synaps.io/v3}
+  #     healthcheck:
+  #       test: curl --fail http://localhost:8080/ || exit 1
+  #       interval: 30s
+  #       retries: 10 # Will try for 5 minutes      
+  #     restart: always
+  #     security_opt:
+  #       - "seccomp:unconfined"
 
-  #----------------#
+  # #----------------#
 
-  valuter-ui:
-    image: archwaynetwork/valuter-ui:latest
-    container_name: valuter-ui
-    build:
-      context: ./valuter-ui
-    ports: 
-      - 8081:80
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "200k"
-        max-file: "10"
-    volumes:
-      - ./valuter-ui:/root/src
-      - ./valuter-ui/public/conf.js:/usr/share/nginx/html/conf.js
-    networks:
-      - archwaynetwork
-    healthcheck:
-      test: curl --fail http://localhost:8081/ || exit 1
-      interval: 30s
-      retries: 10 # Will try for 5 minutes      
-    restart: always
-    security_opt:
-      - "seccomp:unconfined"
+  # valuter-ui:
+  #   image: archwaynetwork/valuter-ui:latest
+  #   container_name: valuter-ui
+  #   build:
+  #     context: ./valuter-ui
+  #   ports: 
+  #     - 8081:80
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "200k"
+  #       max-file: "10"
+  #   volumes:
+  #     - ./valuter-ui:/root/src
+  #     - ./valuter-ui/public/conf.js:/usr/share/nginx/html/conf.js
+  #   networks:
+  #     - archwaynetwork
+  #   healthcheck:
+  #     test: curl --fail http://localhost:8081/ || exit 1
+  #     interval: 30s
+  #     retries: 10 # Will try for 5 minutes      
+  #   restart: always
+  #   security_opt:
+  #     - "seccomp:unconfined"
 
-  #----------------#
+  # #----------------#
 
-  cosmologger:
-    image: archwaynetwork/cosmologger:latest
-    container_name: cosmologger
-    build:
-      context: ./cosmologger
-      # target: development  # development | test | production (default) # docker-compose up --build
-    depends_on: 
-      - postgres
-    ports: 
-      - 2345:2345
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "200k"
-        max-file: "10"
-    volumes:
-      - ./cosmologger:/go/src/app  # We need it for development
-      - ./cosmologger/conf.json:/app/conf.json
-    networks:
-      - archwaynetwork
-    environment:
-      RPC_ADDRESS: ${RPC_ADDRESS:-}
-      GRPC_ADDRESS: ${GRPC_ADDRESS:-}
-      GRPC_TLS: ${GRPC_TLS:-false}
-      POSTGRES_DB: ${POSTGRES_DB:-cosmologger}
-      POSTGRES_USER: ${POSTGRES_USER:-root}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
-      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
-      POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
-    # healthcheck:
-    #   test: curl --fail http://localhost/ || exit 1
-    #   interval: 30s
-    #   retries: 10 # Will try for 5 minutes      
-    restart: always
-    security_opt:
-      - "seccomp:unconfined"
+  # cosmologger:
+  #   image: archwaynetwork/cosmologger:latest
+  #   container_name: cosmologger
+  #   build:
+  #     context: ./cosmologger
+  #     # target: development  # development | test | production (default) # docker-compose up --build
+  #   depends_on: 
+  #     - postgres
+  #   ports: 
+  #     - 2345:2345
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "200k"
+  #       max-file: "10"
+  #   volumes:
+  #     - ./cosmologger:/go/src/app  # We need it for development
+  #     - ./cosmologger/conf.json:/app/conf.json
+  #   networks:
+  #     - archwaynetwork
+  #   environment:
+  #     RPC_ADDRESS: ${RPC_ADDRESS:-}
+  #     GRPC_ADDRESS: ${GRPC_ADDRESS:-}
+  #     GRPC_TLS: ${GRPC_TLS:-false}
+  #     POSTGRES_DB: ${POSTGRES_DB:-cosmologger}
+  #     POSTGRES_USER: ${POSTGRES_USER:-root}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+  #     POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+  #     POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+  #   # healthcheck:
+  #   #   test: curl --fail http://localhost/ || exit 1
+  #   #   interval: 30s
+  #   #   retries: 10 # Will try for 5 minutes      
+  #   restart: always
+  #   security_opt:
+  #     - "seccomp:unconfined"
 
   #----------------#
 
@@ -109,17 +109,14 @@ services:
     container_name: postgres
     image: postgres:latest
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-}
+      POSTGRES_DB: ${POSTGRES_DB:-cosmologger}
       POSTGRES_USER: ${POSTGRES_USER:-root}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
       POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
     volumes:
       - ./db:/var/lib/postgresql/data
-    networks:
-      - archwaynetwork
-    ports:
-      - 5432:5432
+    network_mode: host
     healthcheck:
       test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "root" ]
       timeout: 45s
@@ -140,46 +137,43 @@ services:
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
        - ./pgadmin:/root/.pgadmin
-    ports:
-      - "${PGADMIN_PORT:-5050}:80"
-    networks:
-      - archwaynetwork
+    network_mode: host
     restart: unless-stopped
 
   #----------------# 
 
-  synaps-verifier:
-    image: archwaynetwork/synaps-verifier:latest
-    container_name: synaps-verifier
-    build:
-      context: ./synaps-verifier
-      # target: development  # development | test | production (default) # docker-compose up --build
-    ports: 
-      - 8000:80
-      - 2347:2345
-    volumes:
-      - ./synaps-verifier:/go/src/app
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "200k"
-        max-file: "10"
-    networks:
-      - archwaynetwork
-    environment:
-      SERVING_ADDR: ${SYNAPS_VERIFIER_SERVING_ADDR:-:80} 
-      KYC_API_KEY: ${KYC_API_KEY:-}
-      KYC_CLIENT_ID: ${KYC_CLIENT_ID:-}
-      KYC_API_PATH: ${KYC_API_PATH:-https://individual-api.synaps.io/v3}
-    healthcheck:
-      test: curl --fail http://localhost:80/ || exit 1
-      interval: 30s
-      retries: 10 # Will try for 5 minutes      
-    restart: always
-    security_opt:
-      - "seccomp:unconfined"  
-  #----------------# 
+  # synaps-verifier:
+  #   image: archwaynetwork/synaps-verifier:latest
+  #   container_name: synaps-verifier
+  #   build:
+  #     context: ./synaps-verifier
+  #     # target: development  # development | test | production (default) # docker-compose up --build
+  #   ports: 
+  #     - 8000:80
+  #     - 2347:2345
+  #   volumes:
+  #     - ./synaps-verifier:/go/src/app
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "200k"
+  #       max-file: "10"
+  #   networks:
+  #     - archwaynetwork
+  #   environment:
+  #     SERVING_ADDR: ${SYNAPS_VERIFIER_SERVING_ADDR:-:80} 
+  #     KYC_API_KEY: ${KYC_API_KEY:-}
+  #     KYC_CLIENT_ID: ${KYC_CLIENT_ID:-}
+  #     KYC_API_PATH: ${KYC_API_PATH:-https://individual-api.synaps.io/v3}
+  #   healthcheck:
+  #     test: curl --fail http://localhost:80/ || exit 1
+  #     interval: 30s
+  #     retries: 10 # Will try for 5 minutes      
+  #   restart: always
+  #   security_opt:
+  #     - "seccomp:unconfined"  
+  # #----------------# 
 
-networks:
-  archwaynetwork:
-    driver: bridge
+# networks:
+#   archwaynetwork:
+#     driver: bridge
