@@ -10,3 +10,6 @@
 [submodule "synaps-verifier"]
 	path = synaps-verifier
 	url = git@github.com:archway-network/synaps-verifier.git
+[submodule "nodelogger"]
+	path = nodelogger
+	url = git@github.com:celestiaorg/nodelogger.git
