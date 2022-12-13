@@ -5,7 +5,7 @@ services:
       container_name: valuter
       build:
         context: ./valuter
-        target: development  # development | test | production (default) # docker-compose up --build
+        # target: development  # development | test | production (default) # docker-compose up --build
       # ports: 
       #   - 8080:8080
       #   - 2346:2345
@@ -92,6 +92,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
       POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+      DATA_COLLECTION_MODE: ${DATA_COLLECTION_MODE:-event}
     # healthcheck:
     #   test: curl --fail http://localhost/ || exit 1
     #   interval: 30s
@@ -125,7 +126,7 @@ services:
       PROMETHEUS_URL: ${PROMETHEUS_URL}
       PROMETHEUS_SYNC_INTERVAL: ${PROMETHEUS_SYNC_INTERVAL}
       API_ROWS_PER_PAGE: ${API_ROWS_PER_PAGE}
-      REST_API_ADDRESS: ${REST_API_ADDRESS}
+      REST_API_ADDRESS: ${NODELOGGER_REST_API_ADDRESS}
       DEMO: ${DEMO:-false}
       POSTGRES_DB: ${POSTGRES_DB:-tmp}
       POSTGRES_USER: ${POSTGRES_USER:-root}
@@ -146,13 +147,13 @@ services:
     container_name: postgres
     image: postgres:latest
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-cosmologger}
+      POSTGRES_DB: ${POSTGRES_DB:-tmp}
       POSTGRES_USER: ${POSTGRES_USER:-root}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
       POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
     volumes:
-      - ./db:/var/lib/postgresql/data
+      - ./db_new:/var/lib/postgresql/data
     network_mode: host
     healthcheck:
       test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "root" ]
@@ -163,18 +164,18 @@ services:
 
   #----------------#
 
-  # pgadmin:
-  #   container_name: pgadmin
-  #   image: dpage/pgadmin4
-  #   depends_on: 
-  #     - postgres
-  #   environment:
-  #     PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
-  #     PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
-  #     PGADMIN_CONFIG_SERVER_MODE: 'False'
-  #   volumes:
-  #      - ./pgadmin:/root/.pgadmin
-  #   network_mode: host
-  #   restart: unless-stopped
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    depends_on: 
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+       - ./pgadmin:/root/.pgadmin
+    network_mode: host
+    restart: unless-stopped
 
   #----------------# 
