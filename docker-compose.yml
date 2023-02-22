@@ -153,8 +153,10 @@ services:
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
       POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
     volumes:
-      - ./db_new:/var/lib/postgresql/data
+      - postgres-db:/var/lib/postgresql/data
     network_mode: host
+    user: postgres
+    entrypoint: "postgres -N 999"
     healthcheck:
       test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "root" ]
       timeout: 45s
@@ -179,3 +181,6 @@ services:
     restart: unless-stopped
 
   #----------------# 
+
+volumes:
+  postgres-db:
